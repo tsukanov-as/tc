@@ -61,17 +61,20 @@ func (c *Classifier) Predict(fv []float64) ([]float64, error) {
 			if c.ft[fi] == 0 {
 				continue
 			}
-			if fv[fi] > 0 {
-				fp := cf[fi] / c.ct[ci] // feature probability in this class; we can calculate this in advance, but it will take more memory (+classes*features*float64)
-				fp = fp * fv[fi]        // feature value limited by range 0 <= v <= 1, so we just reduce probability proportionally
-				cp = cp * fp            // probability of combination of features in this class
+			fp := cf[fi] / c.ct[ci] // feature probability in this class; we can calculate this in advance, but it will take more memory (+classes*features*float64)
+			if fv[fi] == 0 {
+				fp = 1 - fp
 			}
+			// fp = fp * fv[fi] // feature value limited by range 0 <= v <= 1, so we just reduce probability proportionally
+			cp = cp * fp // probability of combination of features in this class
 		}
 		p[ci] = cp * c.ct[ci] // scale proportionally to probability of this class
 		t += p[ci]
 	}
-	for i := 0; i < len(p); i++ {
-		p[i] = p[i] / t // probability in relation to other classes
+	if t > 0 {
+		for i := 0; i < len(p); i++ {
+			p[i] = p[i] / t // probability in relation to other classes
+		}
 	}
 	return p, nil
 }

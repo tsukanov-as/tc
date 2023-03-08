@@ -99,8 +99,8 @@ func TestStudent(t *testing.T) {
 		t0 := 0.0
 		t1 := 0.0
 		for i := 0; i < cnt; i++ {
-			// подсчет только по ненулевым признакам образца
-			if (sample[0] == 0 || y[i].fv[0] == 1) && (sample[1] == 0 || y[i].fv[1] == 1) && (sample[2] == 0 || y[i].fv[2] == 1) {
+			// все признаки должны совпадать
+			if (sample[0] == y[i].fv[0]) && (sample[1] == y[i].fv[1]) && (sample[2] == y[i].fv[2]) {
 				total++
 				if y[i].cl == 0 {
 					t0++
@@ -110,6 +110,12 @@ func TestStudent(t *testing.T) {
 				}
 			}
 		}
-		fmt.Printf("[%.4f, %.4f]\n", t0/total, t1/total)
+		p0 := 0.0
+		p1 := 0.0
+		if total > 0 {
+			p0 = t0 / total
+			p1 = t1 / total
+		}
+		fmt.Printf("[%.4f, %.4f]\n", p0, p1)
 	}
 }
